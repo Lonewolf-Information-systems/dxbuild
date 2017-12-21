@@ -9,9 +9,6 @@ post](https://resin.io/blog/building-arm-containers-on-any-x86-machine-even-dock
 code [here](https://github.com/resin-io-projects/armv7hf-debian-qemu) and forked it to this and
 cleaned it up a bit and made it possible support all k8s architectures.
 
-I cleaned it up a bit and added some documentation and make it work (my qemu didn't have some
-options).
-
 This has been tested on Debian. You'll also need [qemu](https://wiki.debian.org/QemuUserEmulation)
 installed, but this boils down on apt-get installing some things.
 
