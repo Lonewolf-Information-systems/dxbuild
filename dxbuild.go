@@ -22,7 +22,7 @@ func crossBuildStart() {
 		log.Fatal(err)
 	}
 
-	err = os.Link(xbuild, "/bin/sh")
+	err = os.Link(dxbuild, "/bin/sh")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,7 +42,7 @@ func crossBuildEnd() {
 	for _, bin := range archs {
 		os.Remove(bin)
 	}
-	os.Remove(xbuild)
+	os.Remove(dxbuild)
 }
 
 // If we find any of these we will use them.
