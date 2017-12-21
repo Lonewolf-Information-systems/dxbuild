@@ -7,14 +7,30 @@
 See [this blog
 post](https://resin.io/blog/building-arm-containers-on-any-x86-machine-even-dockerhub/), I used the
 code [here](https://github.com/resin-io-projects/armv7hf-debian-qemu) and forked it to this and
-cleaned it up a bit and made it support all k8s architecture.
+cleaned it up a bit and made it possible support all k8s architectures.
 
-I just cleaned it up a bit and added some documentation.
+I cleaned it up a bit and added some documentation and make it work (my qemu didn't have some
+options).
 
 This has been tested on Debian. You'll also need [qemu](https://wiki.debian.org/QemuUserEmulation)
 installed, but this boils down on apt-get installing some things.
 
 ## Usage
+
+~~~
+% make docker
+~~~
+And then create a *second* Dockerfile with the non amd64 image you want to build, i.e.
+~~~
+FROM arm32v6/builder:latest
+
+RUN [ "cross-build-start" ]
+RUN apk --update add stunnel
+RUN [ "cross-build-end" ]
+RUN [ "cross-build-clean" ]
+~~~
+
+More below.
 
 You'll need two docker containers (multistage builds sadly don't work). One to install the various
 binaries and then another where you actually use them.
