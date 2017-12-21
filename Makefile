@@ -1,3 +1,6 @@
+dxbuild: dxbuild.go
+	go build -ldflags "-w -s" dxbuild.go
+
 .PHONY: bin
 bin: dxbuild
 	mkdir -p bin
@@ -5,12 +8,9 @@ bin: dxbuild
 	cp dxbuild bin
 	ln -sf dxbuild bin/cross-build-end
 	ln -sf dxbuild bin/cross-build-start
+	ln -sf dxbuild bin/cross-build-clean
 	ln -sf sh bin/sh.real
 
-
-dxbuild:
-	go build -ldflags "-w -s" dxbuild.go
-
 .PHONY: docker
-docker:
+docker: bin
 	docker build -t arm32v6/builder:latest .

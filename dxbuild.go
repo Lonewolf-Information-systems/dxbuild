@@ -38,11 +38,16 @@ func crossBuildEnd() {
 		log.Fatal(err)
 	}
 
-	// cleanup
+}
+
+func crossBuildClean() {
 	for _, bin := range archs {
 		os.Remove(bin)
 	}
 	os.Remove(dxbuild)
+	os.Remove("/usr/bin/cross-build-clean")
+	os.Remove("/usr/bin/cross-build-end")
+	os.Remove("/usr/bin/cross-build-start")
 }
 
 // If we find any of these we will use them.
@@ -65,6 +70,9 @@ func runShell() error {
 			break
 		}
 	}
+	if cmd == nil {
+		log.Fatal("no qemu-*-static found in /usr/bin")
+	}
 
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
@@ -79,6 +87,8 @@ func main() {
 		crossBuildStart()
 	case "cross-build-end":
 		crossBuildEnd()
+	case "cross-build-clean":
+		crossBuildClean()
 	default:
 		code := 0
 		crossBuildEnd()
