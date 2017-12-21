@@ -7,6 +7,8 @@ import (
 	"syscall"
 )
 
+const dxbuild = "/usr/bin/dxbuild"
+
 func crossBuildStart() {
 	if _, err := os.Stat("/bin/sh.real"); os.IsNotExist(err) {
 		err = os.Link("/bin/sh", "/bin/sh.real")
@@ -20,7 +22,7 @@ func crossBuildStart() {
 		log.Fatal(err)
 	}
 
-	err = os.Link("/usr/bin/resin-xbuild", "/bin/sh")
+	err = os.Link(xbuild, "/bin/sh")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,20 +37,39 @@ func crossBuildEnd() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// cleanup
+	for _, bin := range archs {
+		os.Remove(bin)
+	}
+	os.Remove(xbuild)
+}
+
+// If we find any of these we will use them.
+var archs = map[string]string{
+	"amd64":   "/usr/bin/qemu-x86_64-static",
+	"arm":     "/usr/bin/qemu-arm-static",
+	"arm64":   "/usr/bin/qemu-aarch64-static",
+	"ppc64le": "/usr/bin/qemu-ppc64le-static",
+	"s390x":   "/usr/bin/qemu-s390x-static",
 }
 
 func runShell() error {
 	var cmd *exec.Cmd
 
-	if _, err := os.Stat("/usr/bin/qemu-arm-static"); err == nil {
-		cmd = exec.Command("/usr/bin/qemu-arm-static", append([]string{"-execve", "-0", os.Args[0], "/bin/sh"}, os.Args[1:]...)...)
-	} else {
-		cmd = exec.Command("/usr/bin/qemu-aarch64-static", append([]string{"-execve", "-0", os.Args[0], "/bin/sh"}, os.Args[1:]...)...)
+	options := append([]string{"-0", os.Args[0], "/bin/sh"}, os.Args[1:]...)
+
+	for _, bin := range archs {
+		if _, err := os.Stat(bin); err == nil {
+			cmd = exec.Command(bin, append(options)...)
+			break
+		}
 	}
 
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+
 	return cmd.Run()
 }
 
