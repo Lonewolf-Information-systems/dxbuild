@@ -9,7 +9,7 @@ import (
 	"github.com/miekg/dxbuild"
 )
 
-const me = "/usr/bin/dxbuild"
+const me = "/usr/bin/build"
 
 func crossBuildStart() {
 	if _, err := os.Stat("/bin/sh.real"); os.IsNotExist(err) {
