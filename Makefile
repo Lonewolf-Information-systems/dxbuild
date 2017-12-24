@@ -1,4 +1,4 @@
-ARCH:=amd64 arm arm64 ppc64le s390x
+ARCH:=arm arm64 ppc64le s390x # amd64 is missing here, because we don't need it.
 
 .PHONY: bin
 bin:
@@ -7,14 +7,18 @@ bin:
 	@ ( cd qemu; make qemu )
 	@ ( cd tag; make tag )
 
-# Create tmp dir, copy dockerfile into, copy build, copy qemu
 .PHONY: docker
 docker:
-	$(eval TEMP := $(shell mktemp -d))
-	$(eval TAG := $(shell tag/tag arm))
-	echo $(TEMP)
-	cp build/build $(TEMP)
-	cp /usr/bin/$(shell qemu/qemu arm) $(TEMP)
-	./dockerfile/dockerfile arm > $(TEMP)/Dockerfile
+	@ for arch in $(ARCH); do \
+	    make $$arch.docker; \
+	done
+
+# Create tmp dir, copy dockerfile into, copy build, copy qemu
+%.docker:
+	@ $(eval TEMP := $(shell mktemp -d))
+	@ $(eval TAG := $(shell tag/tag $*))
+	@ cp build/build $(TEMP)
+	@ cp /usr/bin/$(shell qemu/qemu $*) $(TEMP)
+	@ ./dockerfile/dockerfile $* > $(TEMP)/Dockerfile
 	( cd $(TEMP); docker build -t $(TAG) . )
-	rm -rf $(TEMP)
+	@ rm -rf $(TEMP)
