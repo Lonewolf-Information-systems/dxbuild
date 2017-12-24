@@ -2,6 +2,8 @@
 
 `dxbuild` allows you to build non-amd64 containers on amd64. It currently uses small Debian images.
 
+Working Golang compile chain is expected.
+
 **This is not my idea**
 
 See [this blog
@@ -23,10 +25,11 @@ Each new image will be tagged with `builder` in it, except for amd64:
 ## Usage
 
 ~~~
-% make docker
+% make        # build go binaries
+% make docker # build all builder docker containers
 ~~~
 
-This will create all builder images that you can use in your Dockerfiles.
+We don't upload anything to the docker hub as we want to keep these local and just inherit from.
 
 I.e. this is how you can use them:
 
