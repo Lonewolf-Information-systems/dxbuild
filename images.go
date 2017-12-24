@@ -17,3 +17,12 @@ var DebianImages = map[string]string{
 	"ppc64le": "ppc64le/debian:stable-slim",
 	"s390x":   "s390x/debian:stable-slim",
 }
+
+// DebianBuildImages is a map with all the architectures we generate builder images for.
+var DebianBuildImages = map[string]string{
+	"amd64":   "debian:stable-slim",
+	"arm":     "arm32v7/debian-builder:stable-slim",
+	"arm64":   "arm64v8/debian-builder:stable-slim",
+	"ppc64le": "ppc64le/debian-builder:stable-slim",
+	"s390x":   "s390x/debian-builder:stable-slim",
+}
