@@ -1,6 +1,6 @@
 # dxbuild
 
-`dxbuild` allows you to build non-amd64 containers on amd64. It currently using small Debian images.
+`dxbuild` allows you to build non-amd64 containers on amd64. It currently uses small Debian images.
 
 **This is not my idea**
 
@@ -12,6 +12,11 @@ cleaned it up a bit and made it possible support all k8s architectures.
 This has been tested on Debian. You'll also need [qemu](https://wiki.debian.org/QemuUserEmulation)
 installed, but this boils down on apt-get installing some things.
 
+Each new image will be tagged with `builder` in it:
+
+* arm32v7/debian-builder:stable-slim, for arm32v7
+* arm64v8/debian-builder:stable-slim, for arm64v8
+
 ## Usage
 
 ~~~
@@ -20,7 +25,8 @@ installed, but this boils down on apt-get installing some things.
 
 This will create build images that you can use in your Dockerfiles.
 
-Create a *second* Dockerfile with the non amd64 image you want to build, i.e.
+Create a *second* Dockerfile with the non amd64 image you want to build, i.e, here we use
+the (previously created) arm32v7/debian-*builder*:stable-slim images.
 ~~~
 FROM arm32v7/debian-builder:stable-slim
 
@@ -28,19 +34,6 @@ RUN [ "cross-build-start" ]
 RUN apt-get install stunnel
 RUN [ "cross-build-end" ]
 RUN [ "cross-build-clean" ]
-~~~
-
-More below.
-
-You'll need two docker containers (multistage builds sadly don't work). One to install the various
-binaries and then another where you actually use them.
-
-This example is *just* for ARM.
-
-Dockerfile:
-~~~
-FROM arm32v6/alpine:latest
-COPY bin/ usr/bin/
 ~~~
 
 Other architectures are supported, `dxbuild` will check for:
@@ -54,4 +47,3 @@ var archs = map[string]string{
 	"s390x":   "/usr/bin/qemu-s390x-static",
 }
 ~~~
-And will execute the first one found and this, of course, depends on what you copied into bin/.
