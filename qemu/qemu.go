@@ -16,5 +16,6 @@ func main() {
 	if !ok {
 		log.Fatalf("Can find %s in archs map", os.Args[1])
 	}
-	fmt.Println(qemu)
+	// strip off /usr/bin/
+	fmt.Println(qemu[9:])
 }

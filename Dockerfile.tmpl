@@ -4,6 +4,6 @@ COPY build /usr/bin/build
 COPY {{ .Qemu }} /usr/bin/{{ .Qemu }}
 
 RUN [ "ln","-sf","build","/usr/bin/cross-build-end" ]
-RUN [ "ln","-sf","build","usr/bin/cross-build-start" ]
+RUN [ "ln","-sf","build","/usr/bin/cross-build-start" ]
 RUN [ "ln","-sf","build","/usr/bin/cross-build-clean" ]
 RUN [ "ln","-sf","sh","/usr/bin/sh.real" ]

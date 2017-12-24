@@ -28,7 +28,7 @@ func main() {
 	}
 
 	t := template.Must(template.New("Dockerfile.tmpl").ParseFiles("Dockerfile.tmpl"))
-	df := dockerFile{Image: debian, Qemu: qemu}
+	df := dockerFile{Image: debian, Qemu: qemu[9:]} // strip off /usr/bin/
 	if err := t.Execute(os.Stdout, df); err != nil {
 		log.Fatal(err)
 	}

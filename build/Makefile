@@ -1,3 +1,3 @@
-dxbuild: dxbuild.go ../images.go
-	go build -ldflags "-w -s" dxbuild.go
+build: build.go ../images.go
+	go build -ldflags "-w -s" build.go
 
