@@ -12,10 +12,13 @@ cleaned it up a bit and made it possible support all k8s architectures.
 This has been tested on Debian. You'll also need [qemu](https://wiki.debian.org/QemuUserEmulation)
 installed, but this boils down on apt-get installing some things.
 
-Each new image will be tagged with `builder` in it:
+Each new image will be tagged with `builder` in it, except for amd64:
 
-* arm32v7/debian-builder:stable-slim, for arm32v7
-* arm64v8/debian-builder:stable-slim, for arm64v8
+* amd64 -> debian:stable-slim
+* arm -> arm32v7/debian-builder:stable-slim
+* arm64 -> arm64v8/debian-builder:stable-slim
+* ppc64le -> ppc64le/debian-builder:stable-slim
+* s390x -> s390x/debian-builder:stable-slim
 
 ## Usage
 
@@ -23,27 +26,17 @@ Each new image will be tagged with `builder` in it:
 % make docker
 ~~~
 
-This will create build images that you can use in your Dockerfiles.
+This will create all builder images that you can use in your Dockerfiles.
 
-Create a *second* Dockerfile with the non amd64 image you want to build, i.e, here we use
-the (previously created) arm32v7/debian-*builder*:stable-slim images.
+I.e. this is how you can use them:
+
 ~~~
 FROM arm32v7/debian-builder:stable-slim
 
 RUN [ "cross-build-start" ]
-RUN apt-get install stunnel
+
+RUN apt-get update && apt-get install -y stunnel
+
 RUN [ "cross-build-end" ]
 RUN [ "cross-build-clean" ]
-~~~
-
-Other architectures are supported, `dxbuild` will check for:
-
-~~~ golang
-var archs = map[string]string{
-	"amd64":   "/usr/bin/qemu-x86_64-static",
-	"arm":     "/usr/bin/qemu-arm-static",
-	"arm64":   "/usr/bin/qemu-aarch64-static",
-	"ppc64le": "/usr/bin/qemu-ppc64le-static",
-	"s390x":   "/usr/bin/qemu-s390x-static",
-}
 ~~~
