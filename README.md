@@ -1,6 +1,6 @@
 # dxbuild
 
-`dxbuild` allows you to build non-amd64 containers on amd64.
+`dxbuild` allows you to build non-amd64 containers on amd64. It currently using small Debian images.
 
 **This is not my idea**
 

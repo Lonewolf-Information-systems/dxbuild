@@ -5,9 +5,11 @@ import (
 	"os"
 	"os/exec"
 	"syscall"
+
+	"github.com/miekg/dxbuild"
 )
 
-const dxbuild = "/usr/bin/dxbuild"
+const me = "/usr/bin/dxbuild"
 
 func crossBuildStart() {
 	if _, err := os.Stat("/bin/sh.real"); os.IsNotExist(err) {
@@ -22,7 +24,7 @@ func crossBuildStart() {
 		log.Fatal(err)
 	}
 
-	err = os.Link(dxbuild, "/bin/sh")
+	err = os.Link(me, "/bin/sh")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -41,30 +43,22 @@ func crossBuildEnd() {
 }
 
 func crossBuildClean() {
-	for _, bin := range archs {
+	for _, bin := range dxbuild.Archs {
 		os.Remove(bin)
 	}
-	os.Remove(dxbuild)
+	os.Remove(me)
 	os.Remove("/usr/bin/cross-build-clean")
 	os.Remove("/usr/bin/cross-build-end")
 	os.Remove("/usr/bin/cross-build-start")
 }
 
-// If we find any of these we will use them.
-var archs = map[string]string{
-	"amd64":   "/usr/bin/qemu-x86_64-static",
-	"arm":     "/usr/bin/qemu-arm-static",
-	"arm64":   "/usr/bin/qemu-aarch64-static",
-	"ppc64le": "/usr/bin/qemu-ppc64le-static",
-	"s390x":   "/usr/bin/qemu-s390x-static",
-}
-
-func runShell() error {
+// shell runs a shell command.
+func shell() error {
 	var cmd *exec.Cmd
 
 	options := append([]string{"-0", os.Args[0], "/bin/sh"}, os.Args[1:]...)
 
-	for _, bin := range archs {
+	for _, bin := range dxbuild.Archs {
 		if _, err := os.Stat(bin); err == nil {
 			cmd = exec.Command(bin, append(options)...)
 			break
@@ -93,7 +87,7 @@ func main() {
 		code := 0
 		crossBuildEnd()
 
-		if err := runShell(); err != nil {
+		if err := shell(); err != nil {
 			code = 1
 			if exiterr, ok := err.(*exec.ExitError); ok {
 				if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
@@ -103,7 +97,6 @@ func main() {
 		}
 
 		crossBuildStart()
-
 		os.Exit(code)
 	}
 }

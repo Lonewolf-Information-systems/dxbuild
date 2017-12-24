@@ -1,0 +1,9 @@
+FROM {{ .Image }}
+
+COPY dxbuild /usr/bin/dxbuild
+COPY {{ .Qemu }} /usr/bin/{{ .Qemu }}
+
+RUN [ "ln","-sf","dxbuild","/usr/bin/cross-build-end" ]
+RUN [ "ln","-sf","dxbuild","usr/bin/cross-build-start" ]
+RUN [ "ln","-sf","dxbuild","/usr/bin/cross-build-clean" ]
+RUN [ "ln","-sf","sh","/usr/bin/sh.real" ]

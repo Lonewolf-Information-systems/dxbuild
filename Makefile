@@ -1,16 +1,24 @@
-dxbuild: dxbuild.go
-	go build -ldflags "-w -s" dxbuild.go
+LINUX_ARCH:=amd64 arm arm64 ppc64le s390x
+
+all: dxbuild dxdocker
+
 
 .PHONY: bin
 bin: dxbuild
 	mkdir -p bin
 	cp $$(which qemu-arm-static) bin/qemu-arm-static
 	cp dxbuild bin
-	ln -sf dxbuild bin/cross-build-end
-	ln -sf dxbuild bin/cross-build-start
-	ln -sf dxbuild bin/cross-build-clean
-	ln -sf sh bin/sh.real
 
 .PHONY: docker
 docker: bin
 	docker build -t arm32v6/builder:latest .
+
+.PHONY: dxbuild
+dxbuild:
+	cd dxbuild
+	$(MAKE)
+
+.PHONY: dxdocker
+dxdocker:
+	cd dxdocker
+	$(MAKE)
