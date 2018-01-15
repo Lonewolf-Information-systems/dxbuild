@@ -7,5 +7,3 @@ RUN [ "ln","-sf","build","/usr/bin/cross-build-end" ]
 RUN [ "ln","-sf","build","/usr/bin/cross-build-start" ]
 RUN [ "ln","-sf","build","/usr/bin/cross-build-clean" ]
 RUN [ "ln","-sf","sh","/usr/bin/sh.real" ]
-
-ONBUILD RUN apt-get -u update && apt-get -uy upgrade
